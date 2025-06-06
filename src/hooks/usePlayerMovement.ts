@@ -12,10 +12,10 @@ export function usePlayerMovement(
     const handleKey = (e: KeyboardEvent) => {
       setPosition((prev) => {
         let { x, y } = prev;
-        if (e.key === "w") y = Math.max(0, y - 5);
-        if (e.key === "s") y = Math.min(600 - 4, y + 5);
-        if (e.key === "a") x = Math.max(0, x - 5);
-        if (e.key === "d") x = Math.min(800 - 4, x + 5);
+        if (e.key === "ArrowUp") y = Math.max(0, y - 5);
+        if (e.key === "ArrowDown") y = Math.min(600 - 4, y + 5);
+        if (e.key === "ArrowLeft") x = Math.max(0, x - 5);
+        if (e.key === "ArrowRight") x = Math.min(800 - 4, x + 5);
 
         // Сохраняем в БД
         set(ref(db, `players/${playerId}`), {

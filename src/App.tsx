@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import GameField from "./components/GameField";
 import { db, ref, set, onDisconnect, remove } from "./services/firebase";
-import Chat from "./components/Chat";
+import Chat, { deleteUserMessages } from "./components/Chat";
+import ArrowKeysIcon from "./components/WasdIcon";
 
 const FIELD_WIDTH = 800;
 const FIELD_HEIGHT = 600;
@@ -47,11 +48,13 @@ function App() {
   }, [loggedIn]);
 
   // Кнопка выхода
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem("playerId");
     localStorage.removeItem("playerColor");
     localStorage.removeItem("playerName");
     localStorage.removeItem("loggedIn");
+    localStorage.removeItem("chat-archive");
+    await deleteUserMessages(playerId);
     setName("");
     setLoggedIn(false);
   };
@@ -121,21 +124,25 @@ function App() {
         <h2 className="text-blue-700 text-2xl font-bold mb-2">
           Приятной игры, <span className="text-blue-500">{name}</span>!
         </h2>
-        <p className="text-gray-700 text-lg mb-4 text-center">
-          Используй стрелки для движения.
-          <br />
-          Видишь других игроков? Поздоровайся!
-        </p>
-        <div className="mt-4 text-sm text-gray-400">
+        <div className="flex flex-col items-center mb-2 mt-4">
+          <ArrowKeysIcon />
+          <span className="text-gray-500 text-xs mt-2">
+            Двигайся по полю с помощью стрелок
+          </span>
+        </div>
+        <div className="mt-6 text-sm text-gray-400">
           ID: <span className="font-mono">{playerId.slice(0, 8)}</span>
         </div>
         <button
           onClick={handleLogout}
-          className="mt-8 px-6 py-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 font-semibold shadow transition"
+          className="mt-2 px-6 py-2 rounded-lg bg-red-100 hover:bg-red-200 text-red-600 font-semibold shadow transition"
         >
           Выйти
         </button>
-        <Chat name={name} />
+        <p className="text-gray-700 text-lg mt-10 text-center">
+          Поздоровайся в чате!
+        </p>
+        <Chat name={name} playerId={playerId} />
       </div>
     </div>
   );

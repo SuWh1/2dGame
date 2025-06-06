@@ -8,6 +8,7 @@ import {
   remove,
   onDisconnect,
   push,
+  get,
 } from "firebase/database";
 
 const firebaseConfig = {
@@ -25,4 +26,4 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-export { db, ref, set, onValue, remove, onDisconnect, push };
+export { db, ref, set, onValue, remove, onDisconnect, push, get };

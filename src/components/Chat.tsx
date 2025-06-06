@@ -1,30 +1,66 @@
 import { useRef, useState, useEffect } from "react";
-import { db, ref, push, onValue } from "../services/firebase";
+import { db, ref, push, onValue, remove, get } from "../services/firebase";
 
 interface ChatMessage {
   name: string;
   text: string;
   timestamp: number;
+  playerId?: string;
+}
+
+const CHAT_ARCHIVE_KEY = "chat-archive";
+const CHAT_LIMIT = 15;
+
+export async function deleteUserMessages(playerId: string) {
+  const chatRef = ref(db, "chat");
+  const snap = await get(chatRef);
+  const data = snap.val() || {};
+  for (const [key, msg] of Object.entries(data)) {
+    if ((msg as any).playerId === playerId) {
+      await remove(ref(db, `chat/${key}`));
+    }
+  }
 }
 
 export default function Chat({
   disabled = false,
   name = "Гость",
+  playerId,
+  setIsInputActive,
 }: {
   disabled?: boolean;
   name?: string;
+  playerId?: string;
+  setIsInputActive?: (active: boolean) => void;
 }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // При загрузке — подгружаем архив, если есть
+  useEffect(() => {
+    const archiveRaw = localStorage.getItem(CHAT_ARCHIVE_KEY);
+    let archive: ChatMessage[] = [];
+    if (archiveRaw) {
+      try {
+        archive = JSON.parse(archiveRaw);
+      } catch {}
+    }
+    setMessages(archive);
+  }, []);
+
+  // Реалтайм-обновление из Firebase
   useEffect(() => {
     const chatRef = ref(db, "chat");
     const unsubscribe = onValue(chatRef, (snapshot) => {
-      const data = snapshot.val() || {};
-      // Преобразуем в массив и сортируем по времени
-      const arr = Object.values(data) as ChatMessage[];
+      let arr = Object.values(snapshot.val() || {}) as ChatMessage[];
       arr.sort((a, b) => a.timestamp - b.timestamp);
+      // Только последние CHAT_LIMIT
+      if (arr.length > CHAT_LIMIT) {
+        const archive = arr.slice(0, arr.length - CHAT_LIMIT);
+        localStorage.setItem(CHAT_ARCHIVE_KEY, JSON.stringify(archive));
+        arr = arr.slice(-CHAT_LIMIT);
+      }
       setMessages(arr);
     });
     return () => unsubscribe();
@@ -41,6 +77,7 @@ export default function Chat({
         name: name || "Гость",
         text: input,
         timestamp: Date.now(),
+        playerId: playerId || undefined,
       });
       setInput("");
     }
@@ -55,7 +92,7 @@ export default function Chat({
           </div>
         )}
         {messages.map((msg, i) => {
-          const isMe = name && msg.name === name;
+          const isMe = playerId && msg.playerId === playerId;
           return (
             <div
               key={i}
@@ -94,6 +131,8 @@ export default function Chat({
           }}
           disabled={disabled}
           maxLength={200}
+          onFocus={() => setIsInputActive && setIsInputActive(true)}
+          onBlur={() => setIsInputActive && setIsInputActive(false)}
         />
         <button
           onClick={sendMessage}
