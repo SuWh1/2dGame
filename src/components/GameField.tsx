@@ -3,7 +3,6 @@ import { usePlayerMovement } from "../hooks/usePlayerMovement";
 import { useRealtimePlayers } from "../hooks/useRealtimePlayers";
 
 type Position = { x: number; y: number };
-type Player = { id: string; x: number; y: number; color: string; name: string };
 type GameFieldProps = {
   playerId: string;
   color: string;
