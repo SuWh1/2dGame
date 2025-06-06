@@ -1,4 +1,3 @@
-import type { CSSProperties } from "react";
 import { usePlayerMovement } from "../hooks/usePlayerMovement";
 import { useRealtimePlayers } from "../hooks/useRealtimePlayers";
 
@@ -9,37 +8,6 @@ type GameFieldProps = {
   position: Position;
   setPosition: React.Dispatch<React.SetStateAction<Position>>;
   name: string;
-};
-
-const FIELD_STYLE: CSSProperties = {
-  width: 800,
-  height: 600,
-  backgroundColor: "#111",
-  position: "relative",
-  margin: "20px auto",
-};
-
-const PLAYER_STYLE: CSSProperties = {
-  width: 4,
-  height: 4,
-  position: "absolute",
-  borderRadius: 2,
-  zIndex: 2,
-};
-
-const NAME_STYLE: CSSProperties = {
-  position: "absolute",
-  top: -18,
-  left: "50%",
-  transform: "translateX(-50%)",
-  color: "#fff",
-  background: "rgba(0,0,0,0.7)",
-  padding: "1px 4px",
-  borderRadius: 3,
-  fontSize: 10,
-  whiteSpace: "nowrap",
-  pointerEvents: "none",
-  zIndex: 3,
 };
 
 export default function GameField({
@@ -53,20 +21,22 @@ export default function GameField({
   usePlayerMovement(playerId, { ...position, color, name }, setPosition);
 
   return (
-    <div style={FIELD_STYLE}>
+    <div className="relative w-[800px] h-[600px] bg-white border-2 border-blue-200 rounded-2xl shadow-xl overflow-hidden">
       {Object.values(players).map((p) => (
         <div
           key={p.id}
+          className={`absolute rounded-full border ${p.id === playerId ? "border-blue-500 z-10" : "border-gray-300 z-0"}`}
           style={{
-            ...PLAYER_STYLE,
             left: p.x,
             top: p.y,
+            width: 12,
+            height: 12,
             backgroundColor: p.color,
-            border: p.id === playerId ? "1px solid #4f8cff" : "1px solid #fff",
-            zIndex: p.id === playerId ? 10 : 2,
           }}
         >
-          <span style={NAME_STYLE}>{p.name || "Гость"}</span>
+          <span className="absolute -top-5 left-1/2 -translate-x-1/2 text-xs px-2 py-0.5 bg-gray-800 text-white rounded shadow pointer-events-none whitespace-nowrap">
+            {p.name || "Гость"}
+          </span>
         </div>
       ))}
     </div>
