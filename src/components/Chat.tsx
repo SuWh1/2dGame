@@ -1,9 +1,34 @@
 import { useRef, useState, useEffect } from "react";
+import { db, ref, push, onValue } from "../services/firebase";
 
-export default function Chat({ disabled = false }: { disabled?: boolean }) {
-  const [messages, setMessages] = useState<string[]>([]);
+interface ChatMessage {
+  name: string;
+  text: string;
+  timestamp: number;
+}
+
+export default function Chat({
+  disabled = false,
+  name = "Гость",
+}: {
+  disabled?: boolean;
+  name?: string;
+}) {
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const chatRef = ref(db, "chat");
+    const unsubscribe = onValue(chatRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      // Преобразуем в массив и сортируем по времени
+      const arr = Object.values(data) as ChatMessage[];
+      arr.sort((a, b) => a.timestamp - b.timestamp);
+      setMessages(arr);
+    });
+    return () => unsubscribe();
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -11,7 +36,12 @@ export default function Chat({ disabled = false }: { disabled?: boolean }) {
 
   const sendMessage = () => {
     if (input.trim()) {
-      setMessages((msgs) => [...msgs, input]);
+      const chatRef = ref(db, "chat");
+      push(chatRef, {
+        name: name || "Гость",
+        text: input,
+        timestamp: Date.now(),
+      });
       setInput("");
     }
   };
@@ -26,7 +56,10 @@ export default function Chat({ disabled = false }: { disabled?: boolean }) {
         )}
         {messages.map((msg, i) => (
           <div key={i} className="text-gray-800 text-sm mb-1 break-words">
-            {msg}
+            <span className="font-semibold text-blue-500 mr-2">
+              {msg.name}:
+            </span>
+            {msg.text}
           </div>
         ))}
         <div ref={messagesEndRef} />
