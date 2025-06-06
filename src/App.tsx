@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import GameField from "./components/GameField";
 import { db, ref, set, onDisconnect, remove } from "./services/firebase";
+import Chat from "./components/Chat";
 
 const FIELD_WIDTH = 800;
 const FIELD_HEIGHT = 600;
@@ -97,6 +98,7 @@ function App() {
           >
             Начать игру
           </button>
+          <Chat disabled />
         </div>
       </div>
     );
@@ -133,6 +135,7 @@ function App() {
         >
           Выйти
         </button>
+        <Chat />
       </div>
     </div>
   );
