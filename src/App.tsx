@@ -77,12 +77,9 @@ function App() {
           <h1 className="text-blue-700 text-4xl font-bold mb-4 tracking-wide drop-shadow">
             2D Online Game
           </h1>
-          <p className="text-gray-700 text-lg mb-8 text-center">
+          <p className="grid text-gray-700 text-lg text-center">
             Добро пожаловать!
-            <br />
-            Двигайся по полю, используй wasd.
-            <br />
-            <span className="text-blue-500 font-semibold">
+            <span className="text-blue-500 font-semibold mt-8">
               Введи ник и начни играть!
             </span>
           </p>
@@ -91,7 +88,7 @@ function App() {
             placeholder="Введите никнейм"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="px-4 py-3 text-lg rounded-lg border border-blue-300 mb-5 bg-blue-50 text-gray-900 outline-none focus:ring-2 focus:ring-blue-400 w-72 shadow-sm"
+            className="px-4 py-3 text-lg rounded-lg border border-blue-300 mb-5 mt-2 bg-blue-50 text-gray-900 outline-none focus:ring-2 focus:ring-blue-400 w-72 shadow-sm"
             autoFocus
             maxLength={20}
           />
