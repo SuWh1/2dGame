@@ -98,7 +98,7 @@ function App() {
           >
             Начать игру
           </button>
-          <Chat disabled />
+          <Chat disabled name={name} />
         </div>
       </div>
     );
@@ -135,7 +135,7 @@ function App() {
         >
           Выйти
         </button>
-        <Chat />
+        <Chat name={name} />
       </div>
     </div>
   );

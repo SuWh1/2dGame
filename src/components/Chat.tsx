@@ -54,14 +54,30 @@ export default function Chat({
             Нет сообщений
           </div>
         )}
-        {messages.map((msg, i) => (
-          <div key={i} className="text-gray-800 text-sm mb-1 break-words">
-            <span className="font-semibold text-blue-500 mr-2">
-              {msg.name}:
-            </span>
-            {msg.text}
-          </div>
-        ))}
+        {messages.map((msg, i) => {
+          const isMe = name && msg.name === name;
+          return (
+            <div
+              key={i}
+              className={`flex mb-1 ${isMe ? "justify-end" : "justify-start"}`}
+            >
+              <div
+                className={`max-w-[80%] px-3 py-2 rounded-lg text-sm break-words shadow-sm ${
+                  isMe
+                    ? "bg-blue-100 text-blue-900 rounded-br-none"
+                    : "bg-gray-100 text-gray-800 rounded-bl-none"
+                }`}
+              >
+                <span
+                  className={`block font-semibold text-xs mb-0.5 ${isMe ? "text-blue-500 text-right" : "text-gray-500 text-left"}`}
+                >
+                  {msg.name}
+                </span>
+                {msg.text}
+              </div>
+            </div>
+          );
+        })}
         <div ref={messagesEndRef} />
       </div>
       <div className="flex gap-2">
