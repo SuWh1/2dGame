@@ -10,32 +10,16 @@ const FIELD_HEIGHT = 600;
 
 function App() {
   // Читаем из localStorage
-  const [playerId] = useState(
-    () => localStorage.getItem("playerId") || uuidv4(),
-  );
+  const [playerId] = useState(() => uuidv4());
   const [color] = useState(
-    () =>
-      localStorage.getItem("playerColor") ||
-      `#${Math.floor(Math.random() * 16777215).toString(16)}`,
+    () => `#${Math.floor(Math.random() * 16777215).toString(16)}`,
   );
   const [position, setPosition] = useState({
     x: FIELD_WIDTH / 2,
     y: FIELD_HEIGHT / 2,
   });
-  const [name, setName] = useState(
-    () => localStorage.getItem("playerName") || "",
-  );
-  const [loggedIn, setLoggedIn] = useState(
-    () => localStorage.getItem("loggedIn") === "true",
-  );
-
-  // Сохраняем в localStorage
-  useEffect(() => {
-    localStorage.setItem("playerId", playerId);
-    localStorage.setItem("playerColor", color);
-    localStorage.setItem("playerName", name);
-    localStorage.setItem("loggedIn", loggedIn ? "true" : "false");
-  }, [playerId, color, name, loggedIn]);
+  const [name, setName] = useState("");
+  const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     if (!loggedIn) return;
@@ -49,11 +33,6 @@ function App() {
 
   // Кнопка выхода
   const handleLogout = async () => {
-    localStorage.removeItem("playerId");
-    localStorage.removeItem("playerColor");
-    localStorage.removeItem("playerName");
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("chat-archive");
     await deleteUserMessages(playerId);
     setName("");
     setLoggedIn(false);
